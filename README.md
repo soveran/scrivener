@@ -100,7 +100,7 @@ Now see what happens with Scrivener:
       attr_accessor :status
 
       def validate
-        assert_format /^(published|draft)$/
+        assert_format :status, /^(published|draft)$/
       end
     end
 
