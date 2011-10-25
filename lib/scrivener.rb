@@ -1,7 +1,7 @@
 require File.expand_path("scrivener/validations", File.dirname(__FILE__))
 
 class Scrivener
-  VERSION = "0.0.1"
+  VERSION = "0.0.2"
 
   include Validations
 
