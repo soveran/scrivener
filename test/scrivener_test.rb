@@ -57,6 +57,15 @@ scope do
     assert_equal [], t.errors[:a]
     assert_equal [:not_present], t.errors[:b]
   end
+
+  test "attributes without @errors" do
+    atts = { :a => 1, :b => 2 }
+
+    t = T.new(atts)
+
+    t.valid?
+    assert_equal atts, t.attributes
+  end
 end
 
 class Quote

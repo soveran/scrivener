@@ -47,6 +47,8 @@ class Scrivener
   def attributes
     Hash.new.tap do |atts|
       instance_variables.each do |ivar|
+        next if ivar == :@errors
+
         att = ivar.to_s.sub(/@/, "").to_sym
         atts[att] = send(att)
       end
