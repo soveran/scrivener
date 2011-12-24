@@ -68,6 +68,46 @@ scope do
   end
 end
 
+class N < Scrivener
+  attr_accessor :a
+  attr_accessor :b
+
+  def validate
+    assert_numeric :a
+    assert_numeric :b
+  end
+end
+
+scope do
+  test "validations" do
+    atts = { :a => 1, :b => 2 }
+
+    n = N.new(atts)
+
+    assert n.valid?
+  end
+
+  test "numeric validations" do
+    atts = { :a => 1, :b => "foobar" }
+
+    n = N.new(atts)
+
+    assert_equal false, n.valid?
+    assert_equal [], n.errors[:a]
+    assert_equal [:not_numeric], n.errors[:b]
+  end
+
+  test "no multiline numerics" do
+    atts = { :a => 1, :b => "1\n2\n3" }
+
+    n = N.new(atts)
+
+    assert_equal false, n.valid?
+    assert_equal [], n.errors[:a]
+    assert_equal [:not_numeric], n.errors[:b]
+  end
+end
+
 class Quote
   include Scrivener::Validations
 
