@@ -110,7 +110,7 @@ Now see what happens with Scrivener:
     article.update_attributes(publish.attributes)
 
     # If we try to change other fields...
-    publish = Publish.new(status: "published", title: title)
+    publish = Publish.new(status: "published", title: "foo")
     #=> NoMethodError: undefined method `title=' for #<Publish...>
 
 It's important to note that using Scrivener implies a greater risk than using
