@@ -37,6 +37,7 @@ chose to ignore the ones that come bundled with ORMs.
 This short example illustrates how to move the validation and whitelisting
 responsibilities away from the model and into Scrivener:
 
+```ruby
     # We use Sequel::Model in this example, but it applies to other ORMs such
     # as Ohm or ActiveRecord.
     class Article < Sequel::Model
@@ -60,6 +61,7 @@ responsibilities away from the model and into Scrivener:
 
     article.valid?            #=> false
     article.errors.on(:state) #=> ["cannot be empty"]
+```
 
 Of course, what you would do instead is declare `:title` and `:body` as allowed
 columns, then assign `:state` using the attribute accessor. The reason for this
@@ -69,6 +71,7 @@ feature and in other is a minor obstacle.
 
 Now see what happens with Scrivener:
 
+```ruby
     # Now the model has no validations or whitelists. It may still have schema
     # constraints, which is a good practice to enforce data integrity.
     class Article < Sequel::Model
@@ -112,6 +115,7 @@ Now see what happens with Scrivener:
     # If we try to change other fields...
     publish = Publish.new(status: "published", title: "foo")
     #=> NoMethodError: undefined method `title=' for #<Publish...>
+```
 
 It's important to note that using Scrivener implies a greater risk than using
 the model validations. Having a central repository of mass assignable
