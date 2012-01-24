@@ -131,15 +131,15 @@ scope do
     p = Person.new({})
 
     assert ! p.valid?
-    assert p.errors[:username].include?(:out_of_range)
+    assert p.errors[:username].include?(:not_in_range)
 
     p = Person.new(username: "fo")
     assert ! p.valid?
-    assert p.errors[:username].include?(:out_of_range)
+    assert p.errors[:username].include?(:not_in_range)
 
     p = Person.new(username: "foofoofoofo")
     assert ! p.valid?
-    assert p.errors[:username].include?(:out_of_range)
+    assert p.errors[:username].include?(:not_in_range)
 
     p = Person.new(username: "foo")
     assert p.valid?
@@ -158,11 +158,11 @@ scope do
   test "member validation" do
     o = Order.new({})
     assert ! o.valid?
-    assert_equal [:invalid], o.errors[:status]
+    assert_equal [:not_valid], o.errors[:status]
 
     o = Order.new(status: "foo")
     assert ! o.valid?
-    assert_equal [:invalid], o.errors[:status]
+    assert_equal [:not_valid], o.errors[:status]
 
     %w{pending paid delivered}.each do |status|
       o = Order.new(status: status)
