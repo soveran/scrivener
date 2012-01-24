@@ -67,7 +67,7 @@ Of course, what you would do instead is declare `:title` and `:body` as allowed
 columns, then assign `:state` using the attribute accessor. The reason for this
 example is to show how you need to work around the fact that there's a single
 declaration for allowed columns and validations, which in many cases is a great
-feature and in other is a minor obstacle.
+feature and in others is a minor obstacle.
 
 Now see what happens with Scrivener:
 
