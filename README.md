@@ -121,6 +121,86 @@ It's important to note that using Scrivener implies a greater risk than using
 the model validations. Having a central repository of mass assignable
 attributes and validations is more secure in most scenarios.
 
+
+Assertions
+-----------
+
+Scrivener ships with some basic assertions. The following is a brief description
+for each of them:
+
+### assert
+
+The `assert` method is used by all the other assertions. It pushes the
+second parameter to the list of errors if the first parameter evaluates
+to false.
+
+``` ruby
+    def assert(value, error)
+       value or errors[error.first].push(error.last) && false
+    end
+```
+
+### assert_present
+
+Checks that the given field is not nil or empty. The error code for this
+assertion is `:not_present`.
+
+### assert_format
+
+Checks that the given field matches the provided regular expression.
+The error code for this assertion is `:format`.
+
+### assert_numeric
+
+Checks that the given field holds a number as a Fixnum or as a string
+representation. The error code for this assertion is `:not_numeric`.
+
+### assert_url
+
+Provides a pretty general URL regular expression match. An important
+point to make is that this assumes that the URL should start with
+`http://` or `https://`. The error code for this assertion is
+`not_url`.
+
+### assert_email
+
+In this current day and age, almost all web applications need to
+validate an email address. This pretty much matches 99% of the emails
+out there. The error code for this assertion is `not_email`.
+
+### assert_member
+
+Checks that a given field is contained within a set of values (i.e.
+like an `ENUM`).
+
+``` ruby
+    def validate
+      assert_member :state, %w{pending paid delivered}
+    end
+```
+
+The error code for this assertion is `not_valid`
+
+### assert_length
+
+Checks that a given field's length falls under a specified range.
+
+``` ruby
+    def validate
+      assert_length :username, 3..20
+    end
+```
+
+The error code for this assertion is `not_in_range`.
+
+### assert_decimal
+
+Checks that a given field looks like a number in the human sense
+of the word. Valid numbers are: 0.1, .1, 1, 1.1, 3.14159, etc.
+
+The error code for this assertion is `not_decimal`.
+
+
 Installation
 ------------
 

@@ -146,11 +146,11 @@ class Scrivener
       end
     end
 
-    def assert_member(att, set, err = [att, :invalid])
+    def assert_member(att, set, err = [att, :not_valid])
       assert(set.include?(send(att)), err)
     end
 
-    def assert_length(att, range, error = [att, :out_of_range])
+    def assert_length(att, range, error = [att, :not_in_range])
       if assert_present(att, error)
         val = send(att).to_s
         assert range.include?(val.length), error
