@@ -160,13 +160,13 @@ representation. The error code for this assertion is `:not_numeric`.
 Provides a pretty general URL regular expression match. An important
 point to make is that this assumes that the URL should start with
 `http://` or `https://`. The error code for this assertion is
-`not_url`.
+`:not_url`.
 
 ### assert_email
 
 In this current day and age, almost all web applications need to
 validate an email address. This pretty much matches 99% of the emails
-out there. The error code for this assertion is `not_email`.
+out there. The error code for this assertion is `:not_email`.
 
 ### assert_member
 
@@ -179,7 +179,7 @@ like an `ENUM`).
     end
 ```
 
-The error code for this assertion is `not_valid`
+The error code for this assertion is `:not_valid`
 
 ### assert_length
 
@@ -191,14 +191,14 @@ Checks that a given field's length falls under a specified range.
     end
 ```
 
-The error code for this assertion is `not_in_range`.
+The error code for this assertion is `:not_in_range`.
 
 ### assert_decimal
 
 Checks that a given field looks like a number in the human sense
 of the word. Valid numbers are: 0.1, .1, 1, 1.1, 3.14159, etc.
 
-The error code for this assertion is `not_decimal`.
+The error code for this assertion is `:not_decimal`.
 
 
 Installation
