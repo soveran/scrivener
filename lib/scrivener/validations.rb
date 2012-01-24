@@ -121,8 +121,46 @@ class Scrivener
     # @see http://cyx.github.com/ohm-contrib/doc/Ohm/NumberValidations.html
     def assert_numeric(att, error = [att, :not_numeric])
       if assert_present(att, error)
-        assert_format(att, /^\d+$/, error)
+        assert_format(att, /\A\d+\z/, error)
       end
+    end
+
+    URL = /\A(http|https):\/\/([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}|(2
+          5[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}
+          |localhost)(:[0-9]{1,5})?(\/.*)?\z/ix
+
+    def assert_url(att, error = [att, :not_url])
+      if assert_present(att, error)
+        assert_format(att, URL, error)
+      end
+    end
+
+    EMAIL = /\A([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*
+            [\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@
+            ((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+
+            [a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)\z/ix
+
+    def assert_email(att, error = [att, :not_email])
+      if assert_present(att, error)
+        assert_format(att, EMAIL, error)
+      end
+    end
+
+    def assert_member(att, set, err = [att, :invalid])
+      assert(set.include?(send(att)), err)
+    end
+
+    def assert_length(att, range, error = [att, :out_of_range])
+      if assert_present(att, error)
+        val = send(att).to_s
+        assert range.include?(val.length), error
+      end
+    end
+
+    DECIMAL = /\A(\d+)?(\.\d+)?\z/
+
+    def assert_decimal(att, error = [att, :not_decimal])
+      assert_format att, DECIMAL, error
     end
 
     # The grand daddy of all assertions. If you want to build custom
@@ -149,4 +187,3 @@ class Scrivener
     end
   end
 end
-

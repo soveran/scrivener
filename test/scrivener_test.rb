@@ -89,3 +89,105 @@ scope do
     assert_equal [:not_present], q.errors[:foo]
   end
 end
+
+class Post < Scrivener
+  attr_accessor :url, :email
+
+  def validate
+    assert_url :url
+    assert_email :email
+  end
+end
+
+scope do
+  test "email & url" do
+    p = Post.new({})
+
+    assert ! p.valid?
+    assert_equal [:not_url],  p.errors[:url]
+    assert_equal [:not_email],  p.errors[:email]
+
+    p = Post.new(url: "google.com", email: "egoogle.com")
+
+    assert ! p.valid?
+    assert_equal [:not_url],  p.errors[:url]
+    assert_equal [:not_email],  p.errors[:email]
+
+    p = Post.new(url: "http://google.com", email: "me@google.com")
+    assert p.valid?
+  end
+end
+
+class Person < Scrivener
+  attr_accessor :username
+
+  def validate
+    assert_length :username, 3..10
+  end
+end
+
+scope do
+  test "length validation" do
+    p = Person.new({})
+
+    assert ! p.valid?
+    assert p.errors[:username].include?(:out_of_range)
+
+    p = Person.new(username: "fo")
+    assert ! p.valid?
+    assert p.errors[:username].include?(:out_of_range)
+
+    p = Person.new(username: "foofoofoofo")
+    assert ! p.valid?
+    assert p.errors[:username].include?(:out_of_range)
+
+    p = Person.new(username: "foo")
+    assert p.valid?
+  end
+end
+
+class Order < Scrivener
+  attr_accessor :status
+
+  def validate
+    assert_member :status, %w{pending paid delivered}
+  end
+end
+
+scope do
+  test "member validation" do
+    o = Order.new({})
+    assert ! o.valid?
+    assert_equal [:invalid], o.errors[:status]
+
+    o = Order.new(status: "foo")
+    assert ! o.valid?
+    assert_equal [:invalid], o.errors[:status]
+
+    %w{pending paid delivered}.each do |status|
+      o = Order.new(status: status)
+      assert o.valid?
+    end
+  end
+end
+
+class Product < Scrivener
+  attr_accessor :price
+
+  def validate
+    assert_decimal :price
+  end
+end
+
+scope do
+  test "decimal validation" do
+    p = Product.new({})
+    assert ! p.valid?
+    assert_equal [:not_decimal], p.errors[:price]
+
+    %w{10 10.1 10.100000 0.100000 .1000}.each do |price|
+      p = Product.new(price: price)
+      assert p.valid?
+    end
+  end
+end
