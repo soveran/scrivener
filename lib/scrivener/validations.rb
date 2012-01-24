@@ -7,6 +7,11 @@ class Scrivener
   # * assert_present
   # * assert_format
   # * assert_numeric
+  # * assert_url
+  # * assert_email
+  # * assert_member
+  # * assert_length
+  # * assert_decimal
   #
   # The core tenets that Scrivener::Validations advocates can be summed up in a
   # few bullet points:
