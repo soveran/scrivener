@@ -121,13 +121,13 @@ class Scrivener
     # @see http://cyx.github.com/ohm-contrib/doc/Ohm/NumberValidations.html
     def assert_numeric(att, error = [att, :not_numeric])
       if assert_present(att, error)
-        assert_format(att, /^\d+$/, error)
+        assert_format(att, /\A\d+\z/, error)
       end
     end
 
-    URL = /^(http|https):\/\/([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}|(2
+    URL = /\A(http|https):\/\/([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}|(2
           5[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}
-          |localhost)(:[0-9]{1,5})?(\/.*)?$/ix
+          |localhost)(:[0-9]{1,5})?(\/.*)?\z/ix
 
     def assert_url(att, error = [att, :not_url])
       if assert_present(att, error)
@@ -135,10 +135,10 @@ class Scrivener
       end
     end
 
-    EMAIL = /^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*
+    EMAIL = /\A([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*
             [\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@
             ((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+
-            [a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/ix
+            [a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)\z/ix
 
     def assert_email(att, error = [att, :not_email])
       if assert_present(att, error)
@@ -157,7 +157,7 @@ class Scrivener
       end
     end
 
-    DECIMAL = /^(\d+)?(\.\d+)?$/
+    DECIMAL = /\A(\d+)?(\.\d+)?\z/
 
     def assert_decimal(att, error = [att, :not_decimal])
       assert_format att, DECIMAL, error
