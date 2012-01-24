@@ -150,6 +150,19 @@ class Scrivener
       assert(set.include?(send(att)), err)
     end
 
+    def assert_length(att, range, error = [att, :out_of_range])
+      if assert_present(att, error)
+        val = send(att).to_s
+        assert range.include?(val.length), error
+      end
+    end
+
+    DECIMAL = /^(\d+)?(\.\d+)?$/
+
+    def assert_decimal(att, error = [att, :not_decimal])
+      assert_format att, DECIMAL, error
+    end
+
     # The grand daddy of all assertions. If you want to build custom
     # assertions, or even quick and dirty ones, you can simply use this method.
     #
@@ -174,4 +187,3 @@ class Scrivener
     end
   end
 end
-
