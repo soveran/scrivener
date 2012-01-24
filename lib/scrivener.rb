@@ -1,7 +1,7 @@
 require File.expand_path("scrivener/validations", File.dirname(__FILE__))
 
 class Scrivener
-  VERSION = "0.0.2"
+  VERSION = "0.0.3"
 
   include Validations
 
@@ -49,7 +49,7 @@ class Scrivener
       instance_variables.each do |ivar|
         next if ivar == :@errors
 
-        att = ivar.to_s.sub(/@/, "").to_sym
+        att = ivar[1..-1].to_sym
         atts[att] = send(att)
       end
     end
