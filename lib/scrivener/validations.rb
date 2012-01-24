@@ -125,6 +125,31 @@ class Scrivener
       end
     end
 
+    URL = /^(http|https):\/\/([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}|(2
+          5[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}
+          |localhost)(:[0-9]{1,5})?(\/.*)?$/ix
+
+    def assert_url(att, error = [att, :not_url])
+      if assert_present(att, error)
+        assert_format(att, URL, error)
+      end
+    end
+
+    EMAIL = /^([\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+\.)*
+            [\w\!\#$\%\&\'\*\+\-\/\=\?\^\`{\|\}\~]+@
+            ((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+
+            [a-z]{2,6})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)$/ix
+
+    def assert_email(att, error = [att, :not_email])
+      if assert_present(att, error)
+        assert_format(att, EMAIL, error)
+      end
+    end
+
+    def assert_member(att, set, err = [att, :invalid])
+      assert(set.include?(send(att)), err)
+    end
+
     # The grand daddy of all assertions. If you want to build custom
     # assertions, or even quick and dirty ones, you can simply use this method.
     #
