@@ -81,7 +81,7 @@ Now see what happens with Scrivener:
     # fields are sent when using mass assignment, a NoMethodError exception is
     # raised.
     #
-    # Note how in this example we don't ask the name on signup.
+    # Note how in this example we don't accept the status attribute.
     class Edit < Scrivener
       attr_accessor :title
       attr_accessor :body
