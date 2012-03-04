@@ -23,7 +23,7 @@ and its features are a subset of Bureaucrat's. For a more robust and tested
 solution, please [check it](https://github.com/tizoc/bureaucrat).
 
 This library exists to satify the need of extracting Ohm's validations for
-reuse in other scenarios. By doing this, all projects using Ohm::Validations
+reuse in other scenarios. By doing this, all projects using `Ohm::Validations`
 will be able to profit from extra assertions such as those provided by
 [ohm-contrib](https://github.com/cyx/ohm-contrib).
 
@@ -72,55 +72,54 @@ feature and in others is a minor obstacle.
 Now see what happens with Scrivener:
 
 ```ruby
-    # Now the model has no validations or whitelists. It may still have schema
-    # constraints, which is a good practice to enforce data integrity.
-    class Article < Sequel::Model
-    end
+# Now the model has no validations or whitelists. It may still have schema
+# constraints, which is a good practice to enforce data integrity.
+class Article < Sequel::Model
+end
 
-    # The attribute accessors are the only fields that will be set. If more
-    # fields are sent when using mass assignment, a NoMethodError exception is
-    # raised.
-    #
-    # Note how in this example we don't accept the status attribute.
-    class Edit < Scrivener
-      attr_accessor :title
-      attr_accessor :body
+# The attribute accessors are the only fields that will be set. If more
+# fields are sent when using mass assignment, a NoMethodError exception is
+# raised.
+#
+# Note how in this example we don't accept the status attribute.
+class Edit < Scrivener
+  attr_accessor :title
+  attr_accessor :body
 
-      def validate
-        assert_present :title
-        assert_present :body
-      end
-    end
+  def validate
+    assert_present :title
+    assert_present :body
+  end
+end
 
-    edit = Edit.new(title: title, body: body)
-    edit.valid?               #=> true
+edit = Edit.new(title: title, body: body)
+edit.valid?               #=> true
 
-    article = Article.new(edit.attributes)
-    article.save
+article = Article.new(edit.attributes)
+article.save
 
-    # And now we only ask for the status.
-    class Publish < Scrivener
-      attr_accessor :status
+# And now we only ask for the status.
+class Publish < Scrivener
+  attr_accessor :status
 
-      def validate
-        assert_format :status, /^(published|draft)$/
-      end
-    end
+  def validate
+    assert_format :status, /^(published|draft)$/
+  end
+end
 
-    publish = Publish.new(status: "published")
-    publish.valid?            #=> true
+publish = Publish.new(status: "published")
+publish.valid?            #=> true
 
-    article.update_attributes(publish.attributes)
+article.update_attributes(publish.attributes)
 
-    # If we try to change other fields...
-    publish = Publish.new(status: "published", title: "foo")
-    #=> NoMethodError: undefined method `title=' for #<Publish...>
+# If we try to change other fields...
+publish = Publish.new(status: "published", title: "foo")
+#=> NoMethodError: undefined method `title=' for #<Publish...>
 ```
 
 It's important to note that using Scrivener implies a greater risk than using
 the model validations. Having a central repository of mass assignable
 attributes and validations is more secure in most scenarios.
-
 
 Assertions
 -----------
@@ -135,9 +134,9 @@ second parameter to the list of errors if the first parameter evaluates
 to false.
 
 ``` ruby
-    def assert(value, error)
-       value or errors[error.first].push(error.last) && false
-    end
+def assert(value, error)
+   value or errors[error.first].push(error.last) && false
+end
 ```
 
 ### assert_present
@@ -174,9 +173,9 @@ Checks that a given field is contained within a set of values (i.e.
 like an `ENUM`).
 
 ``` ruby
-    def validate
-      assert_member :state, %w{pending paid delivered}
-    end
+def validate
+  assert_member :state, %w{pending paid delivered}
+end
 ```
 
 The error code for this assertion is `:not_valid`
@@ -186,9 +185,9 @@ The error code for this assertion is `:not_valid`
 Checks that a given field's length falls under a specified range.
 
 ``` ruby
-    def validate
-      assert_length :username, 3..20
-    end
+def validate
+  assert_length :username, 3..20
+end
 ```
 
 The error code for this assertion is `:not_in_range`.
@@ -199,7 +198,6 @@ Checks that a given field looks like a number in the human sense
 of the word. Valid numbers are: 0.1, .1, 1, 1.1, 3.14159, etc.
 
 The error code for this assertion is `:not_decimal`.
-
 
 Installation
 ------------
