@@ -32,35 +32,35 @@ Usage
 
 Using Scrivener feels very natural no matter what underlying model you are
 using. As it provides its own validation and whitelisting features, you can
-chose to ignore the ones that come bundled with ORMs.
+choose to ignore the ones that come bundled with ORMs.
 
 This short example illustrates how to move the validation and whitelisting
 responsibilities away from the model and into Scrivener:
 
 ```ruby
-    # We use Sequel::Model in this example, but it applies to other ORMs such
-    # as Ohm or ActiveRecord.
-    class Article < Sequel::Model
+# We use Sequel::Model in this example, but it applies to other ORMs such
+# as Ohm or ActiveRecord.
+class Article < Sequel::Model
 
-      # Whitelist for mass assigned attributes.
-      set_allowed_columns :title, :body, :state
+  # Whitelist for mass assigned attributes.
+  set_allowed_columns :title, :body, :state
 
-      # Validations for all contexts.
-      def validate
-        validates_presence :title
-        validates_presence :body
-        validates_presence :state
-      end
-    end
+  # Validations for all contexts.
+  def validate
+    validates_presence :title
+    validates_presence :body
+    validates_presence :state
+  end
+end
 
-    title = "Bartleby, the Scrivener"
-    body  = "I am a rather elderly man..."
+title = "Bartleby, the Scrivener"
+body  = "I am a rather elderly man..."
 
-    # When using the model...
-    article = Article.new(title: title, body: body)
+# When using the model...
+article = Article.new(title: title, body: body)
 
-    article.valid?            #=> false
-    article.errors.on(:state) #=> ["cannot be empty"]
+article.valid?            #=> false
+article.errors.on(:state) #=> ["cannot be empty"]
 ```
 
 Of course, what you would do instead is declare `:title` and `:body` as allowed
