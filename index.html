@@ -1,0 +1,244 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Scrivener by soveran</title>
+    
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Scrivener</h1>
+        <p>Validation frontend for models.</p>
+        <p class="view"><a href="https://github.com/soveran/scrivener">View the Project on GitHub <small>soveran/scrivener</small></a></p>
+        <ul>
+          <li><a href="https://github.com/soveran/scrivener/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/soveran/scrivener/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/soveran/scrivener">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>Validation frontend for models</h1>
+
+<p>Scrivener removes the validation responsibility from models and acts as a
+filter for whitelisted attributes.</p>
+
+<p>A model may expose different APIs to satisfy different purposes. For example,
+the set of validations for a User in a Sign up process may not be the same
+as the one exposed to an Admin when editing a user profile. While you want
+the User to provide an email, a password and a password confirmation, you
+probably don't want the admin to mess with those attributes at all.</p>
+
+<p>In a wizard, different model states ask for different validations, and a single
+set of validations for the whole process is not the best solution.</p>
+
+<p>Scrivener is Bureaucrat's little brother. It draws all the inspiration from it
+and its features are a subset of Bureaucrat's. For a more robust and tested
+solution, please <a href="https://github.com/tizoc/bureaucrat">check it</a>.</p>
+
+<p>This library exists to satify the need of extracting Ohm's validations for
+reuse in other scenarios. By doing this, all projects using <code>Ohm::Validations</code>
+will be able to profit from extra assertions such as those provided by
+<a href="https://github.com/cyx/ohm-contrib">ohm-contrib</a>.</p>
+
+<h2>Usage</h2>
+
+<p>Using Scrivener feels very natural no matter what underlying model you are
+using. As it provides its own validation and whitelisting features, you can
+choose to ignore the ones that come bundled with ORMs.</p>
+
+<p>This short example illustrates how to move the validation and whitelisting
+responsibilities away from the model and into Scrivener:</p>
+
+<div class="highlight">
+<pre><span class="c1"># We use Sequel::Model in this example, but it applies to other ORMs such</span>
+<span class="c1"># as Ohm or ActiveRecord.</span>
+<span class="k">class</span> <span class="nc">Article</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
+
+  <span class="c1"># Whitelist for mass assigned attributes.</span>
+  <span class="n">set_allowed_columns</span> <span class="ss">:title</span><span class="p">,</span> <span class="ss">:body</span><span class="p">,</span> <span class="ss">:state</span>
+
+  <span class="c1"># Validations for all contexts.</span>
+  <span class="k">def</span> <span class="nf">validate</span>
+    <span class="n">validates_presence</span> <span class="ss">:title</span>
+    <span class="n">validates_presence</span> <span class="ss">:body</span>
+    <span class="n">validates_presence</span> <span class="ss">:state</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">title</span> <span class="o">=</span> <span class="s2">"Bartleby, the Scrivener"</span>
+<span class="n">body</span>  <span class="o">=</span> <span class="s2">"I am a rather elderly man..."</span>
+
+<span class="c1"># When using the model...</span>
+<span class="n">article</span> <span class="o">=</span> <span class="no">Article</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">body</span><span class="p">)</span>
+
+<span class="n">article</span><span class="o">.</span><span class="n">valid?</span>            <span class="c1">#=&gt; false</span>
+<span class="n">article</span><span class="o">.</span><span class="n">errors</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="ss">:state</span><span class="p">)</span> <span class="c1">#=&gt; ["cannot be empty"]</span>
+</pre>
+</div>
+
+
+<p>Of course, what you would do instead is declare <code>:title</code> and <code>:body</code> as allowed
+columns, then assign <code>:state</code> using the attribute accessor. The reason for this
+example is to show how you need to work around the fact that there's a single
+declaration for allowed columns and validations, which in many cases is a great
+feature and in others is a minor obstacle.</p>
+
+<p>Now see what happens with Scrivener:</p>
+
+<div class="highlight">
+<pre><span class="c1"># Now the model has no validations or whitelists. It may still have schema</span>
+<span class="c1"># constraints, which is a good practice to enforce data integrity.</span>
+<span class="k">class</span> <span class="nc">Article</span> <span class="o">&lt;</span> <span class="no">Sequel</span><span class="o">::</span><span class="no">Model</span>
+<span class="k">end</span>
+
+<span class="c1"># The attribute accessors are the only fields that will be set. If more</span>
+<span class="c1"># fields are sent when using mass assignment, a NoMethodError exception is</span>
+<span class="c1"># raised.</span>
+<span class="c1">#</span>
+<span class="c1"># Note how in this example we don't accept the status attribute.</span>
+<span class="k">class</span> <span class="nc">Edit</span> <span class="o">&lt;</span> <span class="no">Scrivener</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:title</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:body</span>
+
+  <span class="k">def</span> <span class="nf">validate</span>
+    <span class="n">assert_present</span> <span class="ss">:title</span>
+    <span class="n">assert_present</span> <span class="ss">:body</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">edit</span> <span class="o">=</span> <span class="no">Edit</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="n">title</span><span class="p">,</span> <span class="n">body</span><span class="p">:</span> <span class="n">body</span><span class="p">)</span>
+<span class="n">edit</span><span class="o">.</span><span class="n">valid?</span>               <span class="c1">#=&gt; true</span>
+
+<span class="n">article</span> <span class="o">=</span> <span class="no">Article</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">edit</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+<span class="n">article</span><span class="o">.</span><span class="n">save</span>
+
+<span class="c1"># And now we only ask for the status.</span>
+<span class="k">class</span> <span class="nc">Publish</span> <span class="o">&lt;</span> <span class="no">Scrivener</span>
+  <span class="kp">attr_accessor</span> <span class="ss">:status</span>
+
+  <span class="k">def</span> <span class="nf">validate</span>
+    <span class="n">assert_format</span> <span class="ss">:status</span><span class="p">,</span> <span class="sr">/^(published|draft)$/</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">publish</span> <span class="o">=</span> <span class="no">Publish</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="s2">"published"</span><span class="p">)</span>
+<span class="n">publish</span><span class="o">.</span><span class="n">valid?</span>            <span class="c1">#=&gt; true</span>
+
+<span class="n">article</span><span class="o">.</span><span class="n">update_attributes</span><span class="p">(</span><span class="n">publish</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+
+<span class="c1"># If we try to change other fields...</span>
+<span class="n">publish</span> <span class="o">=</span> <span class="no">Publish</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">status</span><span class="p">:</span> <span class="s2">"published"</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="s2">"foo"</span><span class="p">)</span>
+<span class="c1">#=&gt; NoMethodError: undefined method `title=' for #&lt;Publish...&gt;</span>
+</pre>
+</div>
+
+
+<p>It's important to note that using Scrivener implies a greater risk than using
+the model validations. Having a central repository of mass assignable
+attributes and validations is more secure in most scenarios.</p>
+
+<h2>Assertions</h2>
+
+<p>Scrivener ships with some basic assertions. The following is a brief description
+for each of them:</p>
+
+<h3>assert</h3>
+
+<p>The <code>assert</code> method is used by all the other assertions. It pushes the
+second parameter to the list of errors if the first parameter evaluates
+to false.</p>
+
+<div class="highlight">
+<pre><span class="k">def</span> <span class="nf">assert</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span>
+   <span class="n">value</span> <span class="ow">or</span> <span class="n">errors</span><span class="o">[</span><span class="n">error</span><span class="o">.</span><span class="n">first</span><span class="o">].</span><span class="n">push</span><span class="p">(</span><span class="n">error</span><span class="o">.</span><span class="n">last</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="kp">false</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<h3>assert_present</h3>
+
+<p>Checks that the given field is not nil or empty. The error code for this
+assertion is <code>:not_present</code>.</p>
+
+<h3>assert_format</h3>
+
+<p>Checks that the given field matches the provided regular expression.
+The error code for this assertion is <code>:format</code>.</p>
+
+<h3>assert_numeric</h3>
+
+<p>Checks that the given field holds a number as a Fixnum or as a string
+representation. The error code for this assertion is <code>:not_numeric</code>.</p>
+
+<h3>assert_url</h3>
+
+<p>Provides a pretty general URL regular expression match. An important
+point to make is that this assumes that the URL should start with
+<code>http://</code> or <code>https://</code>. The error code for this assertion is
+<code>:not_url</code>.</p>
+
+<h3>assert_email</h3>
+
+<p>In this current day and age, almost all web applications need to
+validate an email address. This pretty much matches 99% of the emails
+out there. The error code for this assertion is <code>:not_email</code>.</p>
+
+<h3>assert_member</h3>
+
+<p>Checks that a given field is contained within a set of values (i.e.
+like an <code>ENUM</code>).</p>
+
+<div class="highlight">
+<pre><span class="k">def</span> <span class="nf">validate</span>
+  <span class="n">assert_member</span> <span class="ss">:state</span><span class="p">,</span> <span class="sx">%w{pending paid delivered}</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>The error code for this assertion is <code>:not_valid</code></p>
+
+<h3>assert_length</h3>
+
+<p>Checks that a given field's length falls under a specified range.</p>
+
+<div class="highlight">
+<pre><span class="k">def</span> <span class="nf">validate</span>
+  <span class="n">assert_length</span> <span class="ss">:username</span><span class="p">,</span> <span class="mi">3</span><span class="o">.</span><span class="n">.</span><span class="mi">20</span>
+<span class="k">end</span>
+</pre>
+</div>
+
+
+<p>The error code for this assertion is <code>:not_in_range</code>.</p>
+
+<h3>assert_decimal</h3>
+
+<p>Checks that a given field looks like a number in the human sense
+of the word. Valid numbers are: 0.1, .1, 1, 1.1, 3.14159, etc.</p>
+
+<p>The error code for this assertion is <code>:not_decimal</code>.</p>
+
+<h2>Installation</h2>
+
+<pre><code>$ gem install scrivener
+</code></pre>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/soveran">soveran</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
