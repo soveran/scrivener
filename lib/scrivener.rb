@@ -1,4 +1,4 @@
-require File.expand_path("scrivener/validations", File.dirname(__FILE__))
+require_relative "scrivener/validations"
 
 class Scrivener
   VERSION = "0.0.3"
