@@ -33,7 +33,7 @@ class Scrivener
   #
   # @example
   #
-  #   class Quote
+  #   class Quote < Scrivener
   #     attr_accessor :title
   #     attr_accessor :price
   #     attr_accessor :date
@@ -63,7 +63,7 @@ class Scrivener
     #
     # @example
     #
-    #   class Login
+    #   class Login < Scrivener
     #     attr_accessor :username
     #     attr_accessor :password
     #
@@ -173,7 +173,7 @@ class Scrivener
     #
     # @example
     #
-    #   class CreatePost
+    #   class CreatePost < Scrivener
     #     attr_accessor :slug
     #     attr_accessor :votes
     #
