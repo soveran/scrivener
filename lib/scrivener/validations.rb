@@ -1,4 +1,5 @@
 class Scrivener
+  require "uri"
 
   # Provides a base implementation for extensible validation routines.
   # {Scrivener::Validations} currently only provides the following assertions:
@@ -130,9 +131,7 @@ class Scrivener
       end
     end
 
-    URL = /\A(http|https):\/\/([a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}|(2
-          5[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}
-          |localhost)(:[0-9]{1,5})?(\/.*)?\z/ix
+    URL = URI::regexp(%w(http https))
 
     def assert_url(att, error = [att, :not_url])
       if assert_present(att, error)
