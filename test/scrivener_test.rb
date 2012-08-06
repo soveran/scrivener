@@ -115,6 +115,10 @@ scope do
 
     p = Post.new(url: "http://google.com", email: "me@google.com")
     assert p.valid?
+
+    # server name without a / but a ? is a valid URL
+    p = Post.new(url: "http://google.com?blah=blah", email: "me@google.com")
+    assert p.valid?
   end
 end
 
