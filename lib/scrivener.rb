@@ -8,9 +8,6 @@ class Scrivener
   # Initialize with a hash of attributes and values.
   # If extra attributes are sent, a NoMethodError exception will be raised.
   #
-  # The grand daddy of all assertions. If you want to build custom
-  # assertions, or even quick and dirty ones, you can simply use this method.
-  #
   # @example
   #
   #   class EditPost < Scrivener
