@@ -121,6 +121,46 @@ It's important to note that using Scrivener implies a greater risk than using
 the model validations. Having a central repository of mass assignable
 attributes and validations is more secure in most scenarios.
 
+Slices
+------
+
+If you don't need all the attributes after the filtering is done,
+you can fetch just the ones you need. For example:
+
+```ruby
+class SignUp < Scrivener
+  attr_accessor :email
+  attr_accessor :password
+  attr_accessor :password_confirmation
+
+  def validate
+    assert_email :email
+
+    if assert_present :password
+      assert_equal :password, :password_confirmation
+    end
+  end
+
+  def assert_equal(f1, f2)
+    assert send(f1) == send(f2), [f1, f2, :not_equal]
+  end
+end
+
+filter = SignUp.new(email: "info@example.com",
+                    password: "monkey",
+                    password_confirmation: "monkey")
+
+
+# If the validation succeeds, we only need email and password to
+# create a new user, and we can discard the password_confirmation.
+if filter.valid?
+  User.create(filter.slice(:email, :password))
+end
+```
+
+By calling `slice` with a list of attributes, you get a hash with only
+those key/value pairs.
+
 Assertions
 -----------
 

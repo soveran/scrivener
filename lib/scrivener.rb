@@ -34,8 +34,8 @@ class Scrivener
   #   # Now it's safe to initialize the model.
   #   post = Post.new(edit.attributes)
   #   post.save
-  def initialize(attrs)
-    attrs.each do |key, val|
+  def initialize(atts)
+    atts.each do |key, val|
       send(:"#{key}=", val)
     end
   end
@@ -51,5 +51,12 @@ class Scrivener
       end
     end
   end
-end
 
+  def slice(*keys)
+    Hash.new.tap do |atts|
+      keys.each do |att|
+        atts[att] = send(att)
+      end
+    end
+  end
+end

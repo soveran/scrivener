@@ -27,6 +27,14 @@ scope do
 
     assert_equal atts, s.attributes
   end
+
+  test "return only the required attributes" do
+    atts = { :a => 1, :b => 2 }
+
+    s = S.new(atts)
+
+    assert_equal s.slice(:a), { :a => 1 }
+  end
 end
 
 class T < Scrivener
