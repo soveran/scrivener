@@ -12,6 +12,7 @@ class Scrivener
   # * assert_member
   # * assert_length
   # * assert_decimal
+  # * assert_equal
   #
   # The core tenets that Scrivener::Validations advocates can be summed up in a
   # few bullet points:
@@ -166,6 +167,27 @@ class Scrivener
 
     def assert_decimal(att, error = [att, :not_decimal])
       assert_format att, DECIMAL, error
+    end
+
+    # Check that the attribute has the expected value. It uses === for
+    # comparison, so type checks are possible too. Note that in order
+    # to make the case equality work, the check inverts the order of
+    # the arguments: `assert_equal :foo, Bar` is translated to the
+    # expression `Bar === send(:foo)`.
+    # 
+    # @example
+    # 
+    #   def validate
+    #     assert_equal :status, "pending"
+    #     assert_equal :quantity, Fixnum
+    #   end
+    #
+    # @param [Symbol] att The attribute you wish to verify for equality.
+    # @param [Object] value The value you want to test against.
+    # @param [Array<Symbol, Symbol>] error The error that should be returned
+    #                                when the validation fails.
+    def assert_equal(att, value, error = [att, :not_equal])
+      assert value === send(att), error
     end
 
     # The grand daddy of all assertions. If you want to build custom

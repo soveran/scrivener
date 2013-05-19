@@ -184,6 +184,14 @@ end
 Checks that the given field is not nil or empty. The error code for this
 assertion is `:not_present`.
 
+### assert_equal
+
+Check that the attribute has the expected value. It uses === for
+comparison, so type checks are possible too. Note that in order to
+make the case equality work, the check inverts the order of the
+arguments: `assert_equal :foo, Bar` is translated to the expression
+`Bar === send(:foo)`.
+
 ### assert_format
 
 Checks that the given field matches the provided regular expression.
