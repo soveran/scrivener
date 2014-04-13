@@ -60,7 +60,7 @@ body  = "I am a rather elderly man..."
 article = Article.new(title: title, body: body)
 
 article.valid?            #=> false
-article.errors.on(:state) #=> ["cannot be empty"]
+article.errors[:state] #=> [:not_present]
 ```
 
 Of course, what you would do instead is declare `:title` and `:body` as allowed
