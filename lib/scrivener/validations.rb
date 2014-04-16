@@ -25,13 +25,6 @@ class Scrivener
   #
   # Other validations are simply added on a per-model or per-project basis.
   #
-  # If you want other validations you may want to take a peek at Ohm::Contrib
-  # and all of the validation modules it provides.
-  #
-  # @see http://cyx.github.com/ohm-contrib/doc/Ohm/WebValidations.html
-  # @see http://cyx.github.com/ohm-contrib/doc/Ohm/NumberValidations.html
-  # @see http://cyx.github.com/ohm-contrib/doc/Ohm/ExtraValidations.html
-  #
   # @example
   #
   #   class Quote
@@ -117,14 +110,11 @@ class Scrivener
       assert(!send(att).to_s.empty?, error)
     end
 
-    # Checks if all the characters of an attribute is a digit. If you want to
-    # verify that a value is a decimal, try looking at Ohm::Contrib's
-    # assert_decimal assertion.
+    # Checks if all the characters of an attribute is a digit.
     #
     # @param [Symbol] att The attribute you wish to verify the numeric format.
     # @param [Array<Symbol, Symbol>] error The error that should be returned
     #                                when the validation fails.
-    # @see http://cyx.github.com/ohm-contrib/doc/Ohm/NumberValidations.html
     def assert_numeric(att, error = [att, :not_numeric])
       if assert_present(att, error)
         assert_format(att, /\A\d+\z/, error)
