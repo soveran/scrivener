@@ -23,9 +23,7 @@ and its features are a subset of Bureaucrat's. For a more robust and tested
 solution, please [check it](https://github.com/tizoc/bureaucrat).
 
 This library exists to satify the need of extracting Ohm's validations for
-reuse in other scenarios. By doing this, all projects using `Ohm::Validations`
-will be able to profit from extra assertions such as those provided by
-[ohm-contrib](https://github.com/cyx/ohm-contrib).
+reuse in other scenarios.
 
 Usage
 -----
