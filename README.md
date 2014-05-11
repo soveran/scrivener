@@ -135,12 +135,10 @@ class SignUp < Scrivener
     assert_email :email
 
     if assert_present :password
-      assert_equal :password, :password_confirmation
-    end
-  end
+      assert(password == password_confirmation,
+             [:password_confirmation, :not_confirmed])
 
-  def assert_equal(f1, f2)
-    assert send(f1) == send(f2), [f1, f2, :not_equal]
+    end
   end
 end
 
