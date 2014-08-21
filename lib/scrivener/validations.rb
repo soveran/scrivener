@@ -117,7 +117,7 @@ class Scrivener
     #                                when the validation fails.
     def assert_numeric(att, error = [att, :not_numeric])
       if assert_present(att, error)
-        assert_format(att, /\A\d+\z/, error)
+        assert_format(att, /\A\-?\d+\z/, error)
       end
     end
 
@@ -153,7 +153,7 @@ class Scrivener
       end
     end
 
-    DECIMAL = /\A(\d+)?(\.\d+)?\z/
+    DECIMAL = /\A\-?(\d+)?(\.\d+)?\z/
 
     def assert_decimal(att, error = [att, :not_decimal])
       assert_format att, DECIMAL, error
