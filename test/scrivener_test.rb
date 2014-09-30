@@ -193,7 +193,7 @@ scope do
     assert ! filter.valid?
     assert_equal [:not_decimal], filter.errors[:a]
 
-    %w{10 10.1 10.100000 0.100000 .1000}.each do |a|
+    %w{10 10.1 10.100000 0.100000 .1000 -10}.each do |a|
       filter = G.new(a: a)
       assert filter.valid?
     end
