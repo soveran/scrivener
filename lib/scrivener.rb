@@ -1,7 +1,7 @@
 require_relative "scrivener/validations"
 
 class Scrivener
-  VERSION = "0.2.0"
+  VERSION = "0.3.0"
 
   include Validations
 
