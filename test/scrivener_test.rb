@@ -123,6 +123,9 @@ scope do
 
     filter = D.new(url: "http://google.com", email: "me@google.com")
     assert filter.valid?
+
+    filter = D.new(url: "http://example.versicherung", email: "me@example.versicherung")
+    assert filter.valid?
   end
 end
 
