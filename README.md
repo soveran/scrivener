@@ -138,10 +138,6 @@ class SignUp < Scrivener
       assert_equal :password, :password_confirmation
     end
   end
-
-  def assert_equal(f1, f2)
-    assert send(f1) == send(f2), [f1, f2, :not_equal]
-  end
 end
 
 filter = SignUp.new(email: "info@example.com",
