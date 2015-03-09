@@ -115,10 +115,6 @@ publish = Publish.new(status: "published", title: "foo")
 #=> NoMethodError: undefined method `title=' for #<Publish...>
 ```
 
-It's important to note that using Scrivener implies a greater risk than using
-the model validations. Having a central repository of mass assignable
-attributes and validations is more secure in most scenarios.
-
 Slices
 ------
 
