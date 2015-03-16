@@ -96,7 +96,7 @@ class Scrivener
     #                                when the validation fails.
     def assert_format(att, format, error = [att, :format])
       if assert_present(att, error)
-        assert(send(att).to_s.match(format), error)
+        assert(format === send(att).to_s, error)
       end
     end
 
@@ -164,9 +164,9 @@ class Scrivener
     # to make the case equality work, the check inverts the order of
     # the arguments: `assert_equal :foo, Bar` is translated to the
     # expression `Bar === send(:foo)`.
-    # 
+    #
     # @example
-    # 
+    #
     #   def validate
     #     assert_equal :status, "pending"
     #     assert_equal :quantity, Fixnum
