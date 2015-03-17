@@ -22,9 +22,6 @@ Scrivener is Bureaucrat's little brother. It draws all the inspiration from it
 and its features are a subset of Bureaucrat's. For a more robust and tested
 solution, please [check it](https://github.com/tizoc/bureaucrat).
 
-This library exists to satify the need of extracting Ohm's validations for
-reuse in other scenarios.
-
 Usage
 -----
 
@@ -81,8 +78,8 @@ end
 #
 # Note how in this example we don't accept the status attribute.
 class Edit < Scrivener
-  attr_accessor :title
-  attr_accessor :body
+  attribute :title
+  attribute :body
 
   def validate
     assert_present :title
@@ -98,7 +95,7 @@ article.save
 
 # And now we only ask for the status.
 class Publish < Scrivener
-  attr_accessor :status
+  attribute :status
 
   def validate
     assert_format :status, /^(published|draft)$/
@@ -110,9 +107,9 @@ publish.valid?            #=> true
 
 article.update_attributes(publish.attributes)
 
-# If we try to change other fields...
+# Extra fields are discarded
 publish = Publish.new(status: "published", title: "foo")
-#=> NoMethodError: undefined method `title=' for #<Publish...>
+publis.attributes #=> { :status => "published" }
 ```
 
 Slices
@@ -123,9 +120,9 @@ you can fetch just the ones you need. For example:
 
 ```ruby
 class SignUp < Scrivener
-  attr_accessor :email
-  attr_accessor :password
-  attr_accessor :password_confirmation
+  attribute :email
+  attribute :password
+  attribute :password_confirmation
 
   def validate
     assert_email :email

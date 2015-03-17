@@ -1,17 +1,19 @@
 require File.expand_path("../lib/scrivener", File.dirname(__FILE__))
 
 class A < Scrivener
-  attr_accessor :a
-  attr_accessor :b
+  attribute :a
+  attribute :b
 end
 
 scope do
-  test "raise when there are extra fields" do
+  test "discard extra fields" do
     atts = { :a => 1, :b => 2, :c => 3 }
 
-    assert_raise NoMethodError do
-      filter = A.new(atts)
-    end
+    filter = A.new(atts)
+
+    keys = filter.attributes.keys
+
+    assert_equal [:a, :b], keys.sort
   end
 
   test "not raise when there are less fields" do
@@ -38,8 +40,7 @@ scope do
 end
 
 class B < Scrivener
-  attr_accessor :a
-  attr_accessor :b
+  attribute :a, :b
 
   def validate
     assert_present :a
@@ -76,30 +77,8 @@ scope do
   end
 end
 
-class C
-  include Scrivener::Validations
-
-  attr_accessor :a
-
-  def validate
-    assert_present :a
-  end
-end
-
-scope do
-  test "validations without Scrivener" do
-    filter = C.new
-    filter.a = 1
-    assert filter.valid?
-
-    filter = C.new
-    assert_equal false, filter.valid?
-    assert_equal [:not_present], filter.errors[:a]
-  end
-end
-
 class D < Scrivener
-  attr_accessor :url, :email
+  attribute :url, :email
 
   def validate
     assert_url :url
@@ -130,7 +109,7 @@ scope do
 end
 
 class E < Scrivener
-  attr_accessor :a
+  attribute :a
 
   def validate
     assert_length :a, 3..10
@@ -158,7 +137,7 @@ scope do
 end
 
 class F < Scrivener
-  attr_accessor :status
+  attribute :status
 
   def validate
     assert_member :status, %w{pending paid delivered}
@@ -183,7 +162,7 @@ scope do
 end
 
 class G < Scrivener
-  attr_accessor :a
+  attribute :a
 
   def validate
     assert_decimal :a
@@ -204,7 +183,7 @@ scope do
 end
 
 class H < Scrivener
-  attr_accessor :a
+  attribute :a
 
   def validate
     assert_length :a, 3..10
@@ -232,15 +211,14 @@ scope do
 end
 
 class I < Scrivener
-  attr_accessor :a
-  attr_accessor :b
+  attribute :a
+  attribute :b
 
   def validate
     assert_equal :a, "foo"
     assert_equal :b, Fixnum
   end
 end
-
 
 scope do
   test "equality validation" do
@@ -263,3 +241,4 @@ scope do
     assert filter.valid?
   end
 end
+

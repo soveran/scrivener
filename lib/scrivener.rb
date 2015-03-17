@@ -5,14 +5,22 @@ class Scrivener
 
   include Validations
 
+  def self.attributes
+    @attributes ||= []
+  end
+
+  # Define attributes
+  def self.attribute(*atts)
+    attributes.replace(attributes | atts)
+  end
+
   # Initialize with a hash of attributes and values.
-  # If extra attributes are sent, a NoMethodError exception will be raised.
+  # Extra attributes are discarded.
   #
   # @example
   #
   #   class EditPost < Scrivener
-  #     attr_accessor :title
-  #     attr_accessor :body
+  #     attribute :title, :body
   #
   #     def validate
   #       assert_present :title
@@ -35,27 +43,26 @@ class Scrivener
   #   post = Post.new(edit.attributes)
   #   post.save
   def initialize(atts)
-    atts.each do |key, val|
-      send("#{key}=", val)
+    @attributes = {}
+
+    _attributes.each do |att|
+      @attributes[att] = atts[att]
     end
+  end
+
+  def _attributes
+    self.class.attributes
   end
 
   # Return hash of attributes and values.
   def attributes
-    Hash.new.tap do |atts|
-      instance_variables.each do |ivar|
-        next if ivar == :@errors
-
-        att = ivar[1..-1].to_sym
-        atts[att] = send(att)
-      end
-    end
+    @attributes
   end
 
   def slice(*keys)
     Hash.new.tap do |atts|
       keys.each do |att|
-        atts[att] = send(att)
+        atts[att] = attributes[att]
       end
     end
   end

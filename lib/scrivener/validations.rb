@@ -27,10 +27,10 @@ class Scrivener
   #
   # @example
   #
-  #   class Quote
-  #     attr_accessor :title
-  #     attr_accessor :price
-  #     attr_accessor :date
+  #   class Quote < Scrivener
+  #     attribute :title
+  #     attribute :price
+  #     attribute :date
   #
   #     def validate
   #       assert_present :title
@@ -57,9 +57,9 @@ class Scrivener
     #
     # @example
     #
-    #   class Login
-    #     attr_accessor :username
-    #     attr_accessor :password
+    #   class Login < Scrivener
+    #     attribute :username
+    #     attribute :password
     #
     #     def validate
     #       assert_present :user
@@ -96,7 +96,7 @@ class Scrivener
     #                                when the validation fails.
     def assert_format(att, format, error = [att, :format])
       if assert_present(att, error)
-        assert(send(att).to_s.match(format), error)
+        assert(attributes[att].to_s.match(format), error)
       end
     end
 
@@ -107,7 +107,7 @@ class Scrivener
     # @param [Array<Symbol, Symbol>] error The error that should be returned
     #                                when the validation fails.
     def assert_present(att, error = [att, :not_present])
-      assert(!send(att).to_s.empty?, error)
+      assert(!attributes[att].to_s.empty?, error)
     end
 
     # Checks if all the characters of an attribute is a digit.
@@ -143,12 +143,12 @@ class Scrivener
     end
 
     def assert_member(att, set, err = [att, :not_valid])
-      assert(set.include?(send(att)), err)
+      assert(set.include?(attributes[att]), err)
     end
 
     def assert_length(att, range, error = [att, :not_in_range])
       if assert_present(att, error)
-        val = send(att).to_s
+        val = attributes[att].to_s
         assert range.include?(val.length), error
       end
     end
@@ -177,7 +177,7 @@ class Scrivener
     # @param [Array<Symbol, Symbol>] error The error that should be returned
     #                                when the validation fails.
     def assert_equal(att, value, error = [att, :not_equal])
-      assert value === send(att), error
+      assert value === attributes[att], error
     end
 
     # The grand daddy of all assertions. If you want to build custom
@@ -185,9 +185,9 @@ class Scrivener
     #
     # @example
     #
-    #   class CreatePost
-    #     attr_accessor :slug
-    #     attr_accessor :votes
+    #   class CreatePost < Scrivener
+    #     attribute :slug
+    #     attribute :votes
     #
     #     def validate
     #       assert_slug :slug
