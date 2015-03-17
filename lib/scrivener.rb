@@ -36,7 +36,11 @@ class Scrivener
   #   post.save
   def initialize(atts)
     atts.each do |key, val|
-      send("#{key}=", val)
+      accessor = "#{key}="
+
+      if respond_to?(accessor)
+        send(accessor, val)
+      end
     end
   end
 
