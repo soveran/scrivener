@@ -36,7 +36,7 @@ class Scrivener
   #   post.save
   def initialize(atts)
     atts.each do |key, val|
-      send(:"#{key}=", val)
+      send("#{key}=", val)
     end
   end
 
