@@ -6,7 +6,7 @@ class Scrivener
   include Validations
 
   # Initialize with a hash of attributes and values.
-  # If extra attributes are sent, a NoMethodError exception will be raised.
+  # Extra attributes are discarded.
   #
   # @example
   #
