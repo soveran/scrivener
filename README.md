@@ -110,9 +110,9 @@ publish.valid?            #=> true
 
 article.update_attributes(publish.attributes)
 
-# If we try to change other fields...
+# Extra fields are discarded
 publish = Publish.new(status: "published", title: "foo")
-#=> NoMethodError: undefined method `title=' for #<Publish...>
+publis.attributes #=> { :status => "published" }
 ```
 
 Slices
