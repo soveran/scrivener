@@ -6,12 +6,14 @@ class A < Scrivener
 end
 
 scope do
-  test "raise when there are extra fields" do
+  test "not consider extra fields" do
     atts = { :a => 1, :b => 2, :c => 3 }
 
-    assert_raise NoMethodError do
-      filter = A.new(atts)
-    end
+    filter = A.new(atts)
+
+    atts.delete(:c)
+
+    assert_equal atts, filter.attributes
   end
 
   test "not raise when there are less fields" do
