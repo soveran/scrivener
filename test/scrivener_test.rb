@@ -6,7 +6,7 @@ class A < Scrivener
 end
 
 scope do
-  test "not consider extra fields" do
+  test "ignore extra fields" do
     atts = { :a => 1, :b => 2, :c => 3 }
 
     filter = A.new(atts)
