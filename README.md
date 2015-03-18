@@ -112,7 +112,7 @@ article.update_attributes(publish.attributes)
 
 # Extra fields are discarded
 publish = Publish.new(status: "published", title: "foo")
-publis.attributes #=> { :status => "published" }
+publish.attributes #=> { :status => "published" }
 ```
 
 Slices
