@@ -44,13 +44,17 @@ class Scrivener
     end
   end
 
+  def _accessors
+    public_methods(false).select do |name|
+      name[-1] == "="
+    end
+  end
+
   # Return hash of attributes and values.
   def attributes
     Hash.new.tap do |atts|
-      instance_variables.each do |ivar|
-        next if ivar == :@errors
-
-        att = ivar[1..-1].to_sym
+      _accessors.each do |accessor|
+        att = accessor[0..-2].to_sym
         atts[att] = send(att)
       end
     end
