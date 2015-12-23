@@ -35,6 +35,8 @@ class Scrivener
   #   post = Post.new(edit.attributes)
   #   post.save
   def initialize(atts)
+    @_accessors = atts.keys.map { |key| "#{key}=".to_sym }
+
     atts.each do |key, val|
       accessor = "#{key}="
 
@@ -45,7 +47,7 @@ class Scrivener
   end
 
   def _accessors
-    public_methods(false).select do |name|
+    @_accessors & public_methods(false).select do |name|
       name[-1] == "="
     end
   end

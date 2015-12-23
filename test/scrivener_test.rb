@@ -20,6 +20,7 @@ scope do
     atts = { :a => 1 }
 
     assert filter = A.new(atts)
+    assert_equal filter.attributes, { :a => 1 }
   end
 
   test "return attributes" do
