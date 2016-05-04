@@ -207,34 +207,6 @@ end
 
 class H < Scrivener
   attr_accessor :a
-
-  def validate
-    assert_length :a, 3..10
-  end
-end
-
-scope do
-  test "length validation" do
-    filter = H.new({})
-
-    assert ! filter.valid?
-    assert filter.errors[:a].include?(:not_in_range)
-
-    filter = H.new(a: "fo")
-    assert ! filter.valid?
-    assert filter.errors[:a].include?(:not_in_range)
-
-    filter = H.new(a: "foofoofoofo")
-    assert ! filter.valid?
-    assert filter.errors[:a].include?(:not_in_range)
-
-    filter = H.new(a: "foo")
-    assert filter.valid?
-  end
-end
-
-class I < Scrivener
-  attr_accessor :a
   attr_accessor :b
 
   def validate
@@ -243,24 +215,23 @@ class I < Scrivener
   end
 end
 
-
 scope do
   test "equality validation" do
-    filter = I.new({})
+    filter = H.new({})
 
     assert ! filter.valid?
     assert filter.errors[:a].include?(:not_equal)
     assert filter.errors[:b].include?(:not_equal)
 
-    filter = I.new(a: "foo", b: "bar")
+    filter = H.new(a: "foo", b: "bar")
     assert ! filter.valid?
 
-    filter = I.new(a: "foo")
+    filter = H.new(a: "foo")
     assert ! filter.valid?
     assert filter.errors[:a].empty?
     assert filter.errors[:b].include?(:not_equal)
 
-    filter = I.new(a: "foo", b: 42)
+    filter = H.new(a: "foo", b: 42)
     filter.valid?
     assert filter.valid?
   end
