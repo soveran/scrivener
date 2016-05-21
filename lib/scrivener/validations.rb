@@ -44,9 +44,9 @@ class Scrivener
   #   # => false
   #
   #   s.errors
-  #   # => { :title => [:not_present],
-  #          :price => [:not_numeric],
-  #          :date  => [:format] }
+  #   # => { :title => [[:not_present]],
+  #          :price => [[:not_numeric]],
+  #          :date  => [[:format, /\A[\d]{4}-[\d]{1,2}-[\d]{1,2}\z] }
   #
   module Validations
 
@@ -92,9 +92,10 @@ class Scrivener
     # @param [Symbol] att The attribute you want to verify the format of.
     # @param [Regexp] format The regular expression with which to compare
     #                 the value of att with.
-    # @param [Array<Symbol, Symbol>] error The error that should be returned
-    #                                when the validation fails.
-    def assert_format(att, format, error = [att, :format])
+    # @param [Array<Symbol, Array<Symbol, Object>>] error The error that should
+    #                                               be returned when the
+    #                                               validation fails.
+    def assert_format(att, format, error = [att, [:format, format]])
       if assert_present(att, error)
         assert(send(att).to_s.match(format), error)
       end
@@ -104,18 +105,20 @@ class Scrivener
     # value of the attribute is empty.
     #
     # @param [Symbol] att The attribute you wish to verify the presence of.
-    # @param [Array<Symbol, Symbol>] error The error that should be returned
-    #                                when the validation fails.
-    def assert_present(att, error = [att, :not_present])
+    # @param [Array<Symbol, Array<Symbol, Object>>] error The error that should
+    #                                               be returned when the
+    #                                               validation fails.
+    def assert_present(att, error = [att, [:not_present]])
       assert(!send(att).to_s.empty?, error)
     end
 
     # Checks if all the characters of an attribute is a digit.
     #
     # @param [Symbol] att The attribute you wish to verify the numeric format.
-    # @param [Array<Symbol, Symbol>] error The error that should be returned
-    #                                when the validation fails.
-    def assert_numeric(att, error = [att, :not_numeric])
+    # @param [Array<Symbol, Array<Symbol, Object>>] error The error that should
+    #                                               be returned when the
+    #                                               validation fails.
+    def assert_numeric(att, error = [att, [:not_numeric]])
       if assert_present(att, error)
         assert_format(att, /\A\-?\d+\z/, error)
       end
@@ -125,7 +128,7 @@ class Scrivener
           5[0-5]|2[0-4]\d|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}
           |localhost)(:[0-9]{1,5})?(\/.*)?\z/ix
 
-    def assert_url(att, error = [att, :not_url])
+    def assert_url(att, error = [att, [:not_url]])
       if assert_present(att, error)
         assert_format(att, URL, error)
       end
@@ -136,17 +139,17 @@ class Scrivener
             ((((([a-z0-9]{1}[a-z0-9\-]{0,62}[a-z0-9]{1})|[a-z])\.)+
             [a-z]{2,12})|(\d{1,3}\.){3}\d{1,3}(\:\d{1,5})?)\z/ix
 
-    def assert_email(att, error = [att, :not_email])
+    def assert_email(att, error = [att, [:not_email]])
       if assert_present(att, error)
         assert_format(att, EMAIL, error)
       end
     end
 
-    def assert_member(att, set, err = [att, :not_valid])
+    def assert_member(att, set, err = [att, [:not_valid, set]])
       assert(set.include?(send(att)), err)
     end
 
-    def assert_length(att, range, error = [att, :not_in_range])
+    def assert_length(att, range, error = [att, [:not_in_range, range]])
       if assert_present(att, error)
         val = send(att).to_s
         assert range.include?(val.length), error
@@ -155,7 +158,7 @@ class Scrivener
 
     DECIMAL = /\A\-?(\d+)?(\.\d+)?\z/
 
-    def assert_decimal(att, error = [att, :not_decimal])
+    def assert_decimal(att, error = [att, [:not_decimal]])
       assert_format att, DECIMAL, error
     end
 
@@ -174,9 +177,10 @@ class Scrivener
     #
     # @param [Symbol] att The attribute you wish to verify for equality.
     # @param [Object] value The value you want to test against.
-    # @param [Array<Symbol, Symbol>] error The error that should be returned
-    #                                when the validation fails.
-    def assert_equal(att, value, error = [att, :not_equal])
+    # @param [Array<Symbol, Array<Symbol, Object>>] error The error that should
+    #                                               be returned when the
+    #                                               validation fails.
+    def assert_equal(att, value, error = [att, [:not_equal, value]])
       assert value === send(att), error
     end
 

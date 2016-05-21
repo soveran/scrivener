@@ -58,7 +58,7 @@ body  = "I am a rather elderly man..."
 article = Article.new(title: title, body: body)
 
 article.valid?            #=> false
-article.errors[:state] #=> [:not_present]
+article.errors[:state] #=> [[:not_present]]
 ```
 
 Of course, what you would do instead is declare `:title` and `:body` as allowed
@@ -151,6 +151,13 @@ end
 By calling `slice` with a list of attributes, you get a hash with only
 those key/value pairs.
 
+Validation Errors
+-----------------
+
+Errors in a Scrivener assertion are meant to be a two-element Array, where the
+first element is an error code, and the second an optional context describing
+the failure.
+
 Assertions
 -----------
 
@@ -165,14 +172,14 @@ to false.
 
 ``` ruby
 def assert(value, error)
-   value or errors[error.first].push(error.last) && false
+  value or errors[error.first].push(error.last) && false
 end
 ```
 
 ### assert_present
 
 Checks that the given field is not nil or empty. The error code for this
-assertion is `:not_present`.
+assertion is `:not_present`, with no context.
 
 ### assert_equal
 
@@ -182,28 +189,34 @@ make the case equality work, the check inverts the order of the
 arguments: `assert_equal :foo, Bar` is translated to the expression
 `Bar === send(:foo)`.
 
+The error code for this assertion is `:not_equal`. The context is the
+value you passed for checking, so `assrt_equal :foo, Bar` would return
+a `[:not_equal, Bar]` error.
+
 ### assert_format
 
 Checks that the given field matches the provided regular expression.
-The error code for this assertion is `:format`.
+The error code for this assertion is `:format`, and the context the regular
+expression.
 
 ### assert_numeric
 
 Checks that the given field holds a number as a Fixnum or as a string
-representation. The error code for this assertion is `:not_numeric`.
+representation. The error code for this assertion is `:not_numeric`, with no
+context.
 
 ### assert_url
 
 Provides a pretty general URL regular expression match. An important
 point to make is that this assumes that the URL should start with
 `http://` or `https://`. The error code for this assertion is
-`:not_url`.
+`:not_url`, with no context..
 
 ### assert_email
 
 In this current day and age, almost all web applications need to
 validate an email address. This pretty much matches 99% of the emails
-out there. The error code for this assertion is `:not_email`.
+out there. The error code for this assertion is `:not_email`, with no context.
 
 ### assert_member
 
@@ -216,7 +229,8 @@ def validate
 end
 ```
 
-The error code for this assertion is `:not_valid`
+The error code for this assertion is `:not_valid`, and the context the set of
+vlid values.
 
 ### assert_length
 
@@ -228,14 +242,15 @@ def validate
 end
 ```
 
-The error code for this assertion is `:not_in_range`.
+The error code for this assertion is `:not_in_range`, and the context the range
+of valid lengths.
 
 ### assert_decimal
 
 Checks that a given field looks like a number in the human sense
 of the word. Valid numbers are: 0.1, .1, 1, 1.1, 3.14159, etc.
 
-The error code for this assertion is `:not_decimal`.
+The error code for this assertion is `:not_decimal`, with no context.
 
 Installation
 ------------

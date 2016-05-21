@@ -65,7 +65,7 @@ scope do
 
     assert_equal false, filter.valid?
     assert_equal [], filter.errors[:a]
-    assert_equal [:not_present], filter.errors[:b]
+    assert_equal [[:not_present]], filter.errors[:b]
   end
 
   test "attributes without @errors" do
@@ -96,7 +96,7 @@ scope do
 
     filter = C.new
     assert_equal false, filter.valid?
-    assert_equal [:not_present], filter.errors[:a]
+    assert_equal [[:not_present]], filter.errors[:a]
   end
 end
 
@@ -114,14 +114,14 @@ scope do
     filter = D.new({})
 
     assert ! filter.valid?
-    assert_equal [:not_url],  filter.errors[:url]
-    assert_equal [:not_email],  filter.errors[:email]
+    assert_equal [[:not_url]],  filter.errors[:url]
+    assert_equal [[:not_email]],  filter.errors[:email]
 
     filter = D.new(url: "google.com", email: "egoogle.com")
 
     assert ! filter.valid?
-    assert_equal [:not_url],  filter.errors[:url]
-    assert_equal [:not_email],  filter.errors[:email]
+    assert_equal [[:not_url]],  filter.errors[:url]
+    assert_equal [[:not_email]],  filter.errors[:email]
 
     filter = D.new(url: "http://google.com", email: "me@google.com")
     assert filter.valid?
@@ -144,15 +144,15 @@ scope do
     filter = E.new({})
 
     assert ! filter.valid?
-    assert filter.errors[:a].include?(:not_in_range)
+    assert_equal [[:not_in_range, 3..10]], filter.errors[:a]
 
     filter = E.new(a: "fo")
     assert ! filter.valid?
-    assert filter.errors[:a].include?(:not_in_range)
+    assert_equal [[:not_in_range, 3..10]], filter.errors[:a]
 
     filter = E.new(a: "foofoofoofo")
     assert ! filter.valid?
-    assert filter.errors[:a].include?(:not_in_range)
+    assert_equal [[:not_in_range, 3..10]], filter.errors[:a]
 
     filter = E.new(a: "foo")
     assert filter.valid?
@@ -162,8 +162,10 @@ end
 class F < Scrivener
   attr_accessor :status
 
+  STATUSES = %w{pending paid delivered}
+
   def validate
-    assert_member :status, %w{pending paid delivered}
+    assert_member :status, STATUSES
   end
 end
 
@@ -171,11 +173,11 @@ scope do
   test "member validation" do
     filter = F.new({})
     assert ! filter.valid?
-    assert_equal [:not_valid], filter.errors[:status]
+    assert_equal [[:not_valid, F::STATUSES]], filter.errors[:status]
 
     filter = F.new(status: "foo")
     assert ! filter.valid?
-    assert_equal [:not_valid], filter.errors[:status]
+    assert_equal [[:not_valid, F::STATUSES]], filter.errors[:status]
 
     %w{pending paid delivered}.each do |status|
       filter = F.new(status: status)
@@ -196,7 +198,7 @@ scope do
   test "decimal validation" do
     filter = G.new({})
     assert ! filter.valid?
-    assert_equal [:not_decimal], filter.errors[:a]
+    assert_equal [[:not_decimal]], filter.errors[:a]
 
     %w{10 10.1 10.100000 0.100000 .1000 -10}.each do |a|
       filter = G.new(a: a)
@@ -220,8 +222,8 @@ scope do
     filter = H.new({})
 
     assert ! filter.valid?
-    assert filter.errors[:a].include?(:not_equal)
-    assert filter.errors[:b].include?(:not_equal)
+    assert_equal [[:not_equal, "foo"]], filter.errors[:a]
+    assert_equal [[:not_equal, Fixnum]], filter.errors[:b]
 
     filter = H.new(a: "foo", b: "bar")
     assert ! filter.valid?
@@ -229,7 +231,7 @@ scope do
     filter = H.new(a: "foo")
     assert ! filter.valid?
     assert filter.errors[:a].empty?
-    assert filter.errors[:b].include?(:not_equal)
+    assert_equal [[:not_equal, Fixnum]], filter.errors[:b]
 
     filter = H.new(a: "foo", b: 42)
     filter.valid?
