@@ -211,7 +211,7 @@ class H < Scrivener
 
   def validate
     assert_equal :a, "foo"
-    assert_equal :b, Fixnum
+    assert_equal :b, Integer
   end
 end
 
@@ -234,5 +234,49 @@ scope do
     filter = H.new(a: "foo", b: 42)
     filter.valid?
     assert filter.valid?
+  end
+end
+
+class Scrivener
+  def assert_filter(att, filter, error = nil)
+    filter = filter.new(send(att))
+    
+    unless filter.valid?
+      assert(false, error || [att, filter.errors])
+    end
+  end
+end
+
+class I < Scrivener
+  attr_accessor :name
+  
+  def validate
+    assert_equal :name, "I"
+  end
+end
+
+class J < Scrivener
+  attr_accessor :name
+  attr_accessor :i
+
+  def validate
+    assert_equal :name, "J"
+    assert_filter :i, I
+  end
+end
+
+scope do
+  test "nested filters" do
+    j1 = J.new(name: "J", i: { name: "I" })
+    j2 = J.new(name: "J", i: { name: "H" })
+
+    assert_equal true, j1.valid?
+    assert_equal false, j2.valid?
+
+    errors = {
+      i: [{ name: [:not_equal] }]
+    }
+
+    assert_equal errors, j2.errors
   end
 end
