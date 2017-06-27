@@ -218,13 +218,13 @@ In a wizard, different model states ask for different validations,
 and a single set of validations for the whole process is not the
 best solution.
 
-This library exists to satify the need of extracting
+This library exists to satisfy the need for extracting
 [Ohm](http://ohm.keyvalue.org)'s validations for reuse in other
 scenarios.
 
 Using Scrivener feels very natural no matter what underlying model
 you are using. As it provides its own validation and whitelisting
-features, you can choose to ignore the ones that come bundled with
+features, you can choose to ignore those that come bundled with
 ORMs.
 
 See also
