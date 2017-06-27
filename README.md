@@ -6,81 +6,18 @@ Validation frontend for models.
 Description
 -----------
 
-Scrivener removes the validation responsibility from models and acts as a
-filter for whitelisted attributes.
-
-A model may expose different APIs to satisfy different purposes. For example,
-the set of validations for a User in a Sign up process may not be the same
-as the one exposed to an Admin when editing a user profile. While you want
-the User to provide an email, a password and a password confirmation, you
-probably don't want the admin to mess with those attributes at all.
-
-In a wizard, different model states ask for different validations, and a single
-set of validations for the whole process is not the best solution.
-
-Scrivener is Bureaucrat's little brother. It draws all the inspiration from it
-and its features are a subset of Bureaucrat's. For a more robust and tested
-solution, please [check it](https://github.com/tizoc/bureaucrat).
-
-This library exists to satify the need of extracting Ohm's validations for
-reuse in other scenarios.
+Scrivener removes the validation responsibility from models and
+acts as a filter for whitelisted attributes. Read about the
+[motivation](#motivation) to understand why this separation of
+concerns is important.
 
 Usage
 -----
 
-Using Scrivener feels very natural no matter what underlying model you are
-using. As it provides its own validation and whitelisting features, you can
-choose to ignore the ones that come bundled with ORMs.
-
-This short example illustrates how to move the validation and whitelisting
-responsibilities away from the model and into Scrivener:
+A very basic example would be creating a blog post:
 
 ```ruby
-# We use Sequel::Model in this example, but it applies to other ORMs such
-# as Ohm or ActiveRecord.
-class Article < Sequel::Model
-
-  # Whitelist for mass assigned attributes.
-  set_allowed_columns :title, :body, :state
-
-  # Validations for all contexts.
-  def validate
-    validates_presence :title
-    validates_presence :body
-    validates_presence :state
-  end
-end
-
-title = "Bartleby, the Scrivener"
-body  = "I am a rather elderly man..."
-
-# When using the model...
-article = Article.new(title: title, body: body)
-
-article.valid?            #=> false
-article.errors[:state] #=> [:not_present]
-```
-
-Of course, what you would do instead is declare `:title` and `:body` as allowed
-columns, then assign `:state` using the attribute accessor. The reason for this
-example is to show how you need to work around the fact that there's a single
-declaration for allowed columns and validations, which in many cases is a great
-feature and in others is a minor obstacle.
-
-Now see what happens with Scrivener:
-
-```ruby
-# Now the model has no validations or whitelists. It may still have schema
-# constraints, which is a good practice to enforce data integrity.
-class Article < Sequel::Model
-end
-
-# The attribute accessors are the only fields that will be set. If more
-# fields are sent when using mass assignment, a NoMethodError exception is
-# raised.
-#
-# Note how in this example we don't accept the status attribute.
-class Edit < Scrivener
+class CreateBlogPost < Scrivener
   attr_accessor :title
   attr_accessor :body
 
@@ -89,40 +26,42 @@ class Edit < Scrivener
     assert_present :body
   end
 end
-
-edit = Edit.new(title: title, body: body)
-edit.valid?               #=> true
-
-article = Article.new(edit.attributes)
-article.save
-
-# And now we only ask for the status.
-class Publish < Scrivener
-  attr_accessor :status
-
-  def validate
-    assert_format :status, /^(published|draft)$/
-  end
-end
-
-publish = Publish.new(status: "published")
-publish.valid?            #=> true
-
-article.update_attributes(publish.attributes)
-
-# Extra fields are discarded
-publish = Publish.new(status: "published", title: "foo")
-publish.attributes #=> { :status => "published" }
 ```
 
-Slices
-------
-
-If you don't need all the attributes after the filtering is done,
-you can fetch just the ones you need. For example:
+In order to use it, you have to create an instance of `CreateBlogPost`
+by passing a hash with the attributes `title` and `body` and their
+corresponding values:
 
 ```ruby
-class SignUp < Scrivener
+params = {
+  title: "Bartleby",
+  body: "I am a rather elderly man..."
+}
+
+filter = CreateBlogPost.new(params)
+```
+
+Now you can run the validations by calling `filter.valid?`, and you
+can retrieve the attributes by calling `filter.attributes`. If the
+validation fails, a hash of attributes and error codes will be
+available by calling `filter.errors`. For example:
+
+```ruby
+if filter.valid?
+  puts filter.attributes
+else
+  puts filter.errors
+end
+```
+
+For now, we are just printing the attributes and the list of errors,
+but often you will use the attributes to create an instance of a
+model, and you will display the error messages in a view.
+
+Let's consider the case of creating a new user:
+
+```ruby
+class CreateUser < Scrivener
   attr_accessor :email
   attr_accessor :password
   attr_accessor :password_confirmation
@@ -131,37 +70,52 @@ class SignUp < Scrivener
     assert_email :email
 
     if assert_present :password
-      assert_equal :password, password_confirmation
+      assert_equal :password, :password_confirmation
     end
   end
 end
+```
 
-filter = SignUp.new(email: "info@example.com",
-                    password: "monkey",
-                    password_confirmation: "monkey")
+The filter looks very similar, but as you can see the validations
+return booleans, thus they can be nested. In this example, we don't
+want to bother asserting if the password and the password confirmation
+are equal if the password was not provided.
 
+Let's instantiate the filter:
 
-# If the validation succeeds, we only need email and password to
-# create a new user, and we can discard the password_confirmation.
+```ruby
+params = {
+  email: "info@example.com",
+  password: "monkey",
+  password_confirmation: "monkey"
+}
+
+filter = CreateUser.new(params)
+```
+
+If the validation succeeds, we only need email and password to
+create a new user, and we can discard the password_confirmation.
+The `filter.slice` method receives a list of attributes and returns
+the attributes hash with any other attributes removed. In this
+example, the hash returned by `filter.slice` will contain only the
+`email` and `password` fields:
+
+```ruby
 if filter.valid?
   User.create(filter.slice(:email, :password))
 end
 ```
 
-By calling `slice` with a list of attributes, you get a hash with only
-those key/value pairs.
-
 Assertions
 -----------
 
-Scrivener ships with some basic assertions. The following is a brief description
-for each of them:
+Scrivener ships with some basic assertions.
 
 ### assert
 
 The `assert` method is used by all the other assertions. It pushes the
 second parameter to the list of errors if the first parameter evaluates
-to false.
+to `false` or `nil`.
 
 ``` ruby
 def assert(value, error)
@@ -169,10 +123,23 @@ def assert(value, error)
 end
 ```
 
+New assertions can be built upon existing ones. For example, let's
+define an assertion for possitive numbers:
+
+```ruby
+def assert_possitive(att, error = [att, :not_possitive])
+  assert(send(att) > 0, error)
+end
+```
+
+This assertion calls `assert` and passes both the result of evaluating
+`send(att) > 0` and the array with the attribute and the error code.
+All assertions respect this API.
+
 ### assert_present
 
-Checks that the given field is not nil or empty. The error code for this
-assertion is `:not_present`.
+Checks that the given field is not nil or empty. The error code for
+this assertion is `:not_present`.
 
 ### assert_equal
 
@@ -236,6 +203,36 @@ Checks that a given field looks like a number in the human sense
 of the word. Valid numbers are: 0.1, .1, 1, 1.1, 3.14159, etc.
 
 The error code for this assertion is `:not_decimal`.
+
+Motivation
+----------
+
+A model may expose different APIs to satisfy different purposes.
+For example, the set of validations for a User in a sign up process
+may not be the same as the one exposed to an Admin when editing a
+user profile. While you want the User to provide an email, a password
+and a password confirmation, you probably don't want the admin to
+mess with those attributes at all.
+
+In a wizard, different model states ask for different validations,
+and a single set of validations for the whole process is not the
+best solution.
+
+This library exists to satify the need of extracting
+[Ohm](http://ohm.keyvalue.org)'s validations for reuse in other
+scenarios.
+
+Using Scrivener feels very natural no matter what underlying model
+you are using. As it provides its own validation and whitelisting
+features, you can choose to ignore the ones that come bundled with
+ORMs.
+
+See also
+--------
+
+Scrivener is [Bureaucrat](https://github.com/tizoc/bureaucrat)'s
+little brother. It draws all the inspiration from it and its features
+are a subset of Bureaucrat's.
 
 Installation
 ------------
