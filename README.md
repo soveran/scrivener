@@ -70,7 +70,7 @@ class CreateUser < Scrivener
     assert_email :email
 
     if assert_present :password
-      assert_equal :password, :password_confirmation
+      assert_equal :password, password_confirmation
     end
   end
 end
