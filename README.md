@@ -124,10 +124,10 @@ end
 ```
 
 New assertions can be built upon existing ones. For example, let's
-define an assertion for possitive numbers:
+define an assertion for positive numbers:
 
 ```ruby
-def assert_possitive(att, error = [att, :not_possitive])
+def assert_positive(att, error = [att, :not_positive])
   assert(send(att) > 0, error)
 end
 ```
