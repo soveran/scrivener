@@ -106,6 +106,33 @@ if filter.valid?
 end
 ```
 
+Sometimes we might want to use parameters from the outside for validation,
+but don't want the validator to treat them as attributes. In that case we
+can pass arguments to `#valid?`, and they will be forwarded to `#validate`.
+
+```ruby
+class CreateComment < Scrivener
+  attr_accessor :content
+  attr_accessor :article_id
+
+  def validate(available_articles:)
+    assert_present :content
+    assert_member :article_id, available_articles.map(&:id)
+  end
+end
+```
+
+```ruby
+params = {
+  content:    "this is a comment",
+  article_id: 57,
+}
+
+filter = CreateComment.new(params)
+
+filter.valid?(available_articles: user.articles)
+```
+
 Assertions
 -----------
 

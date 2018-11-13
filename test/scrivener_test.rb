@@ -280,3 +280,24 @@ scope do
     assert_equal errors, j2.errors
   end
 end
+
+class K < Scrivener
+  def validate(argument)
+    assert argument == "K", [:k, :not_valid]
+  end
+end
+
+scope do
+  test "passing arguments" do
+    k = K.new({})
+
+    assert_equal true,  k.valid?("K")
+    assert_equal false, k.valid?("L")
+
+    errors = {
+      k: [:not_valid]
+    }
+
+    assert_equal errors, k.errors
+  end
+end

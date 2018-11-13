@@ -67,14 +67,14 @@ class Scrivener
     #     end
     #   end
     #
-    def valid?
+    def valid?(*args)
       errors.clear
-      validate
+      validate(*args)
       errors.empty?
     end
 
     # Base validate implementation. Override this method in subclasses.
-    def validate
+    def validate(*args)
     end
 
     # Hash of errors for each attribute in this model.
