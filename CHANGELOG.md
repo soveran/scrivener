@@ -1,3 +1,11 @@
+## 1.1.1
+
+* Avoid warning when forwarding arguments to #validate.
+
+## 1.1.0
+
+* Allow passing arguments to Scrivener#validate.
+
 ## 1.0.0
 
 * Extra attributes are ignored.
