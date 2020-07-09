@@ -301,3 +301,24 @@ scope do
     assert_equal errors, k.errors
   end
 end
+
+class L < Scrivener
+  def validate(argument, key:)
+    assert argument == "L" && key == "L", [:l, :not_valid]
+  end
+end
+
+scope do
+  test "passing keyword arguments" do
+    l = L.new({})
+
+    assert_equal true,  l.valid?("L", key: "L")
+    assert_equal false, l.valid?("M", key: "M")
+
+    errors = {
+      l: [:not_valid]
+    }
+
+    assert_equal errors, l.errors
+  end
+end
